@@ -1,7 +1,7 @@
 {
   "name": "react-three-fiber-trees",
-  "private": true,
-  "version": "0.0.0",
+  "private": false,
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,19 +11,9 @@
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.9.0",
-    "@emotion/react": "^11.10.0",
-    "@emotion/styled": "^11.10.0",
-    "@mui/icons-material": "^5.10.3",
-    "@mui/material": "^5.10.2",
-    "@react-three/csg": "^1.1.1",
     "@react-three/drei": "^9.56.11",
     "@react-three/fiber": "*",
     "@react-three/rapier": "^0.6.5",
-    "@testing-library/dom": "^8.17.1",
-    "@testing-library/jest-dom": "*",
-    "@testing-library/react": "*",
-    "@testing-library/user-event": "*",
-    "@types/jest": "*",
     "@types/node": "*",
     "@types/react": "^18.0.18",
     "@types/react-dom": "*",
@@ -32,25 +22,28 @@
     "r3f-perf": "^6.4.4",
     "react": "^18.2.0",
     "react-dom": "*",
-    "react-router-dom": "^6.3.0",
     "simplex-noise": "^4.0.0",
     "three": "^0.139.2",
     "three-stdlib": "^2.14.3",
-    "use-ammojs": "^0.2.21",
-    "uuid": "^8.3.2",
-    "web-vitals": "*"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/three": "^0.143.1",
     "@vitejs/plugin-react": "*",
-    "cross-env": "^7.0.3",
-    "json": "^11.0.0",
-    "jsonresume-theme-elegant": "^1.16.1",
-    "jsonresume-theme-even": "^0.17.0",
-    "jsonresume-theme-spartan": "^0.3.0",
-    "resume-cli": "^3.0.7",
     "typescript": "^4.7.4",
     "vite": "^3.0.9",
     "vite-plugin-dts": "^1.7.2"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/react-three-fiber-trees.umd.js",
+  "module": "./dist/react-three-fiber-trees.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/react-three-fiber-trees.es.js",
+      "require": "./dist/react-three-fiber-trees.umd.js"
+    }
   }
 }
