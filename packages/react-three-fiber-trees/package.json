@@ -20,5 +20,8 @@
       "import": "./dist/react-three-fiber-trees.es.js",
       "require": "./dist/react-three-fiber-trees.umd.js"
     }
+  },
+  "dependencies": {
+    "@react-three/drei": "^9.56.18"
   }
 }

@@ -5,10 +5,10 @@ import React, { forwardRef, ReactNode, useEffect, useMemo } from "react";
 import { BufferGeometry, Float32BufferAttribute, Mesh, PlaneBufferGeometry, PlaneGeometry, Vector3 } from "three";
 
 const colliderDescFromPlaneGeometry = (
-    geometry: BufferGeometry,
+    geometry,
 ) => {
-    let desc: ColliderDesc;
-    const g = geometry as PlaneGeometry
+    let desc;
+    const g = geometry
     const heights = []
     const vertices = g.attributes.position
     const vertex = new Vector3()
@@ -24,19 +24,10 @@ const colliderDescFromPlaneGeometry = (
         { x: g.parameters.width, y: 1, z: g.parameters.height }
     );
 
-    return desc!;
+    return desc;
 }
 
-export type GroundProps = Omit<JSX.IntrinsicElements['mesh'], 'args'> & {
-    width?: number,
-    height?: number,
-    heightFunction?: (x: number, z: number) => number,
-    widthSegments?: number,
-    heightSegments?: number,
-    children?: ReactNode
-};
-
-export const Ground = forwardRef<Mesh, GroundProps>((props, ref) => {
+export const Ground = forwardRef((props, ref) => {
     const widthSegments = props.widthSegments ?? 10
     const heightSegments = props.heightSegments ?? 10
     const heightFunction = props.heightFunction ?? ((_x, _z) => 1)
@@ -49,7 +40,7 @@ export const Ground = forwardRef<Mesh, GroundProps>((props, ref) => {
         const vertex = new Vector3()
         let newPositionAttribute = []
         const positionAttribute = geom.getAttribute('position')
-        const heightLines = Array<number[]>(heightSegments + 1)
+        const heightLines = Array(heightSegments + 1)
 
         for (let y = 0; y <= heightSegments; y++)
             heightLines[y] = []
@@ -70,15 +61,6 @@ export const Ground = forwardRef<Mesh, GroundProps>((props, ref) => {
         geom.attributes.position.needsUpdate = true
 
         return [heights, geom]
-        /*
-                const colliderDesc = rapier.rapier.ColliderDesc.heightfield(
-                    widthSegments,
-                    heightSegments,
-                    new Float32Array(heights),
-                    { x: widthSegments, y: 1.0, z: heightSegments }
-                );
-        
-                return [new Float32Array(heights), geom] */
     }, [true])
 
     const { world, rapier } = useRapier()
@@ -105,24 +87,3 @@ export const Ground = forwardRef<Mesh, GroundProps>((props, ref) => {
     </group>
 })
 
-/*
-    useEffect(() => {
-        let colliderDesc = rapier.rapier.ColliderDesc.heightfield(
-            30,
-            30,
-            new Float32Array(hs),
-            { x: 31, y: 1.0, z: 31 }
-        );
-        rapier.world.createCollider(colliderDesc);
-    })
-
-    colorMap.repeat.set(6, 6)
-    colorMap.wrapS = MirroredRepeatWrapping
-    colorMap.wrapT = MirroredRepeatWrapping
-    colorMap.anisotropy = three.gl.capabilities.getMaxAnisotropy()
-
-    return <group rotation-y={halfpi} >
-        <mesh geometry={geometry} rotation-x={-halfpi}>
-            <meshStandardMaterial map={colorMap} wireframe />
-        </mesh></group>
-*/

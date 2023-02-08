@@ -26,12 +26,7 @@ function angle() {
 
 const matLeaf = new MeshPhysicalMaterial({ color: 'green' })
 
-interface TreeNode {
-    geometry: BufferGeometry,
-    isLeaf: boolean
-}
-
-function createBranchGeometry(level: number): TreeNode[] {
+function createBranchGeometry(level) {
     const rotx = level == 1 ? 0 : angle()
     const roty = level == 1 ? 0 : angle()
     const rotz = level == 1 ? 0 : angle()
@@ -42,7 +37,7 @@ function createBranchGeometry(level: number): TreeNode[] {
     const numChildren = [2, 3, 4, 4, 10, 0][level]
 
     const rotation = new Quaternion().setFromEuler(new Euler(rotx, roty, rotz))
-    let nodes: TreeNode[] = [{
+    let nodes = [{
         isLeaf: level == 5,
         geometry: new CylinderBufferGeometry(radius2, radius, len)
             .translate(0, len / 2, 0)
@@ -60,15 +55,15 @@ function createBranchGeometry(level: number): TreeNode[] {
 }
 
 
-function useWood(): Material {
-    const woodmaps: object = useTexture({
+function useWood() {
+    const woodmaps = useTexture({
         map: woodAlbedoUrl,
         displacementMap: woodHeightUrl,
         normalMap: woodNormalUrl,
         roughnessMap: woodRoughnessUrl,
         aoMap: woodAOurl,
     })
-    for (let txt of Object.values(woodmaps) as Texture[]) {
+    for (let txt of Object.values(woodmaps)) {
         txt.repeat.set(1, 1)
         txt.wrapS = MirroredRepeatWrapping
         txt.wrapT = MirroredRepeatWrapping
@@ -76,32 +71,32 @@ function useWood(): Material {
     return new MeshPhysicalMaterial({ ...woodmaps, displacementScale: 0.02 })
 }
 
-function Tree2(props: { position: Vector3Array }) {
+function Tree2(props) {
     const wood = useWood()
     const nodes = createBranchGeometry(1)
     const materials = [
         wood,
         new MeshPhysicalMaterial({ color: new Color('green') }),
     ]
-    const nonLeaf = mergeBufferGeometries(nodes.filter(x => !x.isLeaf).map(x => x.geometry), false)!
-    const leaf = mergeBufferGeometries(nodes.filter(x => x.isLeaf).map(x => x.geometry), false)!
-    const geometry = mergeBufferGeometries([nonLeaf, leaf], true)!.translate(...props.position)
+    const nonLeaf = mergeBufferGeometries(nodes.filter(x => !x.isLeaf).map(x => x.geometry), false)
+    const leaf = mergeBufferGeometries(nodes.filter(x => x.isLeaf).map(x => x.geometry), false)
+    const geometry = mergeBufferGeometries([nonLeaf, leaf], true).translate(...props.position)
     geometry.groups[1].materialIndex = 1
     return <RigidBody type="fixed" colliders="trimesh">
         <mesh geometry={geometry} material={materials} castShadow receiveShadow />
     </RigidBody>
 }
 
-const rndz = (multiplier: number) => (Math.random() - 0.5) * multiplier
+const rndz = (multiplier) => (Math.random() - 0.5) * multiplier
 
-function Snowflake(props: { position: Vector3Array }) {
+function Snowflake(props) {
     const radius = 0.1
     const rbottom = 0.05
-    const vel: Vector3Array = [rndz(2), rndz(2), rndz(2)]
-    const avel: Vector3Array = [rndz(2), rndz(2), rndz(2)]
+    const vel = [rndz(2), rndz(2), rndz(2)]
+    const avel = [rndz(2), rndz(2), rndz(2)]
     const material = <meshPhysicalMaterial transmission={0.9} ior={0.5} color={niceColors[0][Math.floor(Math.random() * 5)]} />
 
-    const fcone = (position: Vector3Array, rotation: Vector3Array) =>
+    const fcone = (position, rotation) =>
         <Cone position={position} args={[rbottom, radius]} rotation={rotation} castShadow receiveShadow>{material}</Cone>
 
     return <RigidBody position={props.position} linearDamping={2} linearVelocity={vel} angularVelocity={avel}>
@@ -114,11 +109,11 @@ function Snowflake(props: { position: Vector3Array }) {
     </RigidBody>
 }
 
-let lastfps: number[] = []
-const minsnow: number = 50
+let lastfps = []
+const minsnow = 50
 
-function Snow(): JSX.Element {
-    const [spheres, setSpheres] = useState<JSX.Element[]>([])
+function Snow() {
+    const [spheres, setSpheres] = useState([])
     const [shouldCreateNew, setShouldCreateNew] = useState<boolean>(false)
 
     const fps = usePerf()?.log?.fps ?? 0
@@ -128,7 +123,7 @@ function Snow(): JSX.Element {
             setShouldCreateNew(false)
             lastfps = lastfps.concat([fps]).slice(-5)
             const isSlow = lastfps.some(x => x < 20) && spheres.length >= minsnow
-            const pos: Vector3Array = [rndz(2), 5, rndz(2)]
+            const pos = [rndz(2), 5, rndz(2)]
             spheres.push(<Snowflake key={uuid.v4()} position={pos} />)
             setSpheres(isSlow ? spheres.slice(-minsnow) : spheres)
         }
@@ -142,9 +137,9 @@ function Snow(): JSX.Element {
     return <>{spheres}</>
 }
 
-function WoodTree(props: { position: Vector3Array, groundRef: RefObject<Mesh> }) {
+function WoodTree(props) {
 
-    const [position, setPosition] = useState<Vector3Array>()
+    const [position, setPosition] = useState()
     const countDownRef = useRef<number>(1)
     const groundRef = props.groundRef
     useFrame(() => {
@@ -158,7 +153,7 @@ function WoodTree(props: { position: Vector3Array, groundRef: RefObject<Mesh> })
             for (let x1 = -0.1; x1 <= 0.1; x1 += 0.1) {
                 for (let z1 = -0.1; z1 <= 0.1; z1 += 0.1) {
                     const ray = new Raycaster(new Vector3(x + x1, 100, z + z1), new Vector3(0, -1, 0))
-                    const intersect = ray.intersectObject(groundRef.current as Object3D)
+                    const intersect = ray.intersectObject(groundRef.current)
                     if (intersect.length == 1) {
                         yhits.push(intersect[0].point.y)
                     }
@@ -179,14 +174,14 @@ function WoodTree(props: { position: Vector3Array, groundRef: RefObject<Mesh> })
 }
 
 const noise = new SimplexNoise()
-function heightFunction(x: number, z: number) {
+function heightFunction(x, z) {
     let y = 1 * noise.noise(x / 20, z / 20)
     y += 0.2 * noise.noise(x, z)
     // y += 2 * noise.noise(x / 10, z / 10)
     return y;
 }
 
-const GroundWithTexture = forwardRef((_props, ref: Ref<Mesh>) => {
+const GroundWithTexture = forwardRef((_props, ref) => {
     const colorMap = useLoader(TextureLoader, groundTextureUrl)
     colorMap.repeat.set(5, 5)
     colorMap.wrapS = MirroredRepeatWrapping
@@ -196,7 +191,7 @@ const GroundWithTexture = forwardRef((_props, ref: Ref<Mesh>) => {
     </Ground>
 })
 
-function Forest(props: { groundRef: RefObject<Mesh> }) {
+function Forest(props) {
     return <>
         <WoodTree position={[-5, 5, -5]} groundRef={props.groundRef} />
         <WoodTree position={[-5, 5, 5]} groundRef={props.groundRef} />
